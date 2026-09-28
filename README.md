@@ -1,41 +1,39 @@
-# Clos Spine-Leaf Calculator
+# Clos Spine-Leaf Visualizer
 
-Terminal tool for sizing a leaf-spine Clos fabric: given leaf count, server ports per leaf,
-and port speeds, it reports the oversubscription ratio for a given spine count and sweeps
-a set of target ratios to show how many spines each one requires.
+Interactive, single-file tool for sizing a leaf-spine Clos fabric. Set your leaf-facing host
+profile and target oversubscription, and it draws the resulting spine-leaf topology live,
+alongside the same sizing and cost math as before.
 
-No external dependencies -- stdlib only.
+No build step, no server, no external dependencies -- just open `index.html` in a browser.
 
 ## Usage
 
-Interactive (no flags -- prompts for each value):
-
 ```
-python3 clos_calculator.py
+open index.html
 ```
 
-Scripted:
+or double-click the file in Finder.
 
-```
-python3 clos_calculator.py \
-  --leaves 32 --spines 4 \
-  --server-ports 48 --downlink-speed 25 --uplink-speed 100 \
-  --spine-ports 32 \
-  --leaf-cost 15000 --spine-cost 25000 --optic-cost 300 \
-  --ratios 1,2,3,4 \
-  --csv sweep.csv
-```
+## Inputs
 
-Any flag you omit on the command line is prompted for interactively, so partial flags + prompts also works.
+- **End devices per leaf switch** -- number of hosts/servers hanging off each leaf
+- **NIC speed per device (Gbps)** -- downlink port speed to each end device
+- **Target oversubscription (X:1)** -- the downlink:uplink bandwidth ratio the fabric should not exceed
+- **Fabric topology** -- uplink (leaf-to-spine) speed, number of leaf switches, and ports per spine
+  switch (radix), used to draw the topology and check feasibility
+- **Cost estimate** (optional) -- per-switch and per-transceiver costs
 
-## What it computes
+## What it shows
 
-- **Achieved oversubscription** for the spine count you entered: `(server_ports * downlink_speed) / (spines * uplink_speed)`
-- **Sweep table** across target ratios (default 1:1, 2:1, 3:1, 4:1): spines needed for each, whether the
-  resulting leaf count fits within a single spine's port radix, total transceiver count, and estimated cost
-  (if `--leaf-cost` / `--spine-cost` / `--optic-cost` are supplied)
-- **Warnings**: leaf count exceeding spine port radix (needs higher-radix spines or a super-spine tier),
-  and fewer than 3 spines (no maintenance window without an outage)
+- A live spine-leaf diagram: spines on top, leaves on bottom, full mesh between them, with each
+  leaf's end-device count and NIC speed labeled underneath. Large fabrics are abbreviated
+  (first/last few switches with `...`) to stay legible -- the full mesh still applies underneath.
+- **Spines needed** for your target ratio, and the **achieved ratio** with that spine count
+- Warnings for leaf count exceeding spine port radix (needs higher-radix spines or a super-spine
+  tier), and fewer than 3 spines (no maintenance window without an outage)
+- Total transceiver count, total fabric bandwidth, and estimated cost (if switch/optic costs are set)
+- A sweep table showing spines needed across a range of target ratios (1:1 through 6:1) for the
+  same topology
 
 ## Assumptions
 
