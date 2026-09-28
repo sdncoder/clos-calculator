@@ -6,6 +6,8 @@ alongside the same sizing and cost math as before.
 
 No build step, no server, no external dependencies -- just open `index.html` in a browser.
 
+![Clos Spine-Leaf Visualizer screenshot](screenshot.png)
+
 ## Usage
 
 ```
